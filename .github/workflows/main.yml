@@ -1,0 +1,30 @@
+name: 🚀 Auto Deploy to GoDaddy via FTP
+
+on:
+  push:
+    branches:
+      - main  # or 'master' if that's your default branch
+
+jobs:
+  deploy:
+    name: Upload to GoDaddy Hosting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Upload files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_DIR }}
+          local-dir: ./   # your site root folder (adjust if your files are in /dist or /build)
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
+            **/*.md
+            **/README*
