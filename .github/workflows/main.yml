@@ -1,35 +1,4 @@
-name: 🔐 Auto Deploy to GoDaddy via SFTP
-
-on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
-
-jobs:
-    deploy:
-        name: 🚀 Deploy Website to GoDaddy
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: 📦 Checkout Repository
-              uses: actions/checkout@v4
-
-            - name: 🧹 Remove unnecessary files before upload
-              run: |
-                  rm -rf .git .github node_modules *.md README* .env* .DS_Store
-
-            - name: 📤 Upload to GoDaddy via SFTP
-              uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-              with:
-                  server: ${{ secrets.FTP_SERVER }}
-                  port: 22
-                  username: ${{ secrets.FTP_USERNAME }}
-                  ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-                  # Remove password if key works; keep it if you still need fallback
-                  # password: ${{ secrets.FTP_PASSWORD }}
-                  local_path: ./
-                  remote_path: ${{ secrets.FTP_DIR }}
-                  sftp_only: true
-                  delete_remote_files: false
-                  sftpArgs: "-o StrictHostKeyChecking=no"
+deployment:
+    tasks:
+        - export DEPLOYPATH=/home/nazy0gjvbq4s/public_html
+        - /bin/cp -r * $DEPLOYPATH
