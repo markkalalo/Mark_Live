@@ -1,4 +1,21 @@
-deployment:
-    tasks:
-        - export DEPLOYPATH=/home/nazy0gjvbq4s/public_html
-        - /bin/cp -r * $DEPLOYPATH
+name: 🚀 Deploy to GoDaddy
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Deploy to GoDaddy via SSH
+              env:
+                  DEPLOYPATH: /home/nazy0gjvbq4s/public_html
+              run: |
+                  echo "Deploying files to GoDaddy..."
+                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r * ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:$DEPLOYPATH
