@@ -8,25 +8,50 @@ on:
 
 jobs:
     deploy:
+        name: 🚀 Deploy Website to GoDaddy
         runs-on: ubuntu-latest
+
         steps:
-            - name: Checkout Repository
+            # Step 1: Checkout latest code
+            - name: 📦 Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Upload via SFTP
+            # Step 2: Optional - Build your project before deployment (if needed)
+            # - name: 🛠️ Build Project
+            #   run: |
+            #     npm install
+            #     npm run build
+
+            # Step 3: Upload files via SFTP using SSH key authentication
+            - name: 📤 Upload to GoDaddy via SFTP
               uses: wlixcc/SFTP-Deploy-Action@v1.2.4
               with:
                   server: ${{ secrets.FTP_SERVER }}
                   port: 22
                   username: ${{ secrets.FTP_USERNAME }}
-                  password: ${{ secrets.FTP_PASSWORD }}
+
+                  # Use SSH key for authentication (safer than password)
                   ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-                  local_path: ./
-                  remote_path: ${{ secrets.FTP_DIR }}
+                  # Optional: you can remove password if key auth works
+                  password: ${{ secrets.FTP_PASSWORD }}
+
+                  # Paths
+                  local_path: ./ # Source directory in the repo
+                  remote_path: ${{ secrets.FTP_DIR }} # Destination on GoDaddy (e.g., /home/user/public_html)
+
+                  # SFTP settings
                   sftp_only: true
+                  delete_remote_files: false # Keep existing files on server
+
+                  # Optional custom SFTP args (debug or optimize)
+                  sftpArgs: "-o StrictHostKeyChecking=no"
+
+                  # Exclusions (ignored during upload)
                   exclude: |
                       **/.git*
                       **/.github*
                       **/node_modules/**
                       **/*.md
                       **/README*
+                      **/.env*
+                      **/.DS_Store
