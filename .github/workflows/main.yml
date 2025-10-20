@@ -1,4 +1,4 @@
-name: 🚀 Deploy to GoDaddy
+name: 🚀 Deploy to GoDaddy via SSH
 
 on:
     push:
@@ -10,12 +10,19 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout Repository
+            - name: 📦 Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Deploy to GoDaddy via SSH
+            - name: 🔑 Setup SSH Key
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  ssh-keyscan -H ${{ secrets.FTP_SERVER }} >> ~/.ssh/known_hosts
+
+            - name: 🚀 Deploy Files to GoDaddy
               env:
                   DEPLOYPATH: /home/nazy0gjvbq4s/public_html
               run: |
                   echo "Deploying files to GoDaddy..."
-                  scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -r * ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:$DEPLOYPATH
+                  scp -i ~/.ssh/id_rsa -r * ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:$DEPLOYPATH
